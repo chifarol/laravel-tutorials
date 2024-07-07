@@ -54,5 +54,166 @@ Route::match(['get', 'post'], '/', function () {
 #### Routing with controller methods
 
 ```php
+// Laravel uses a convention commonly known as tuple syntax or callable array syntax
 Route::get('/', [WelcomeController::class, 'index']);
+
+// it also supports an older “string” syntax
+Route::get('/', 'WelcomeController@index')
+```
+
+#### Route Parameters
+
+- You can specify parameters in your URL segments
+- These params are eventually passed to your closure
+
+```php
+
+Route::get('users/{id}/{slug}/friends', function ($id,$slug) {
+ //
+});
+
+// it also supports optional route parameters
+Route::get('users/{id?}', function ($id = 'fallbackId') {
+ //
+});
+
+// also supports REGEX
+Route::get('posts/{id}/{slug}', function ($id, $slug) {
+ //
+})->where(['id' => '[0-9]+', 'slug' => '[A-Za-z]+']);
+
+// also has constraint helpers for REGEX route
+Route::get('users/{id}/friends/{friendname}', function ($id, $friendname) {
+ //
+})->whereNumber('id')->whereAlpha('friendname');
+// Other helpers include
+    // ->whereAlphaNumeric('name')
+    // ->whereUuid('id')
+    // ->whereUlid('id')
+    // ->whereIn('type', ['acquaintance', 'bestie', 'frenemy'])
+```
+
+To infer and use Model binding, type hint the
+
+- Pass the lowercase model name as parameter **and** type hint the Model name in the closure or method
+
+```php
+
+Route::get('users/{user}', function (User $user) {
+ //
+ $user->id;
+});
+
+```
+
+#### Route Names
+
+`url('/')` prefixes with full name of site e.g `http://myapp.com/`
+
+But you can also use named routes use `route()`
+
+```php
+route('users.comments.show', [1, 2])
+
+// OR
+
+route('users.comments.show', ['userId' => 1, 'commentId' => 2])
+```
+
+```php
+Route::get( 'users/{userId}/comments/{commentId}', [CommentController::class, 'show'])
+ ->name('users.comments.show');
+
+```
+
+`(resourcePlural.action)` is a common convention when using name()
+
+#### Route Groups
+
+By default, a route group doesn’t actually do anything
+
+```php
+Route::group(function () {
+    Route::get('hello', function () {
+        return 'Hello';
+    });
+    Route::get('world', function () {
+        return 'World';
+    });
+});
+```
+
+##### Middleware
+
+There are many ways of attaching middleware
+
+1.
+
+```php
+Route::middleware('auth')->group(function() {
+ Route::get('dashboard', function () {
+ return view('dashboard');
+ });
+ Route::get('account', function () {
+ return view('account');
+ });
+});
+```
+
+2.
+
+```php
+class DashboardController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth');
+
+        //you can use only() and except() to define which methods will receive that middleware
+        $this->middleware('admin-auth')
+        ->only('editUsers');
+        $this->middleware('team-member')
+        ->except('editUsers');
+    }
+}
+```
+
+##### Path Prefixes
+
+```php
+Route::prefix('dashboard')->group(function () {
+    Route::get('/', function () {
+    // Handles the path /dashboard
+    });
+});
+
+// you can also prefix named routes
+Route::name('comments.')->prefix('comments')->group(function () {
+    Route::get('{id}', function () {
+        // ...
+    })->name('show'); // Route named 'users.comments.show'
+ });
+
+
+```
+
+##### Subdomain Routing
+
+```php
+Route::domain('api.myapp.com')->group(function () {
+ Route::get('/', function () {
+
+});
+});
+
+// 5. Parameterized subdomain routing
+Route::domain('{accountName}.myapp.com')->group(function () {
+ Route::get('/', function ($account) {
+ //
+ });
+ Route::get('users/{id}', function ($accountName, $id) {
+ //
+ });
+});
+
 ```
