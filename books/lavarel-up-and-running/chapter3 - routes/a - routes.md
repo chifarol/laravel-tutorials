@@ -217,3 +217,49 @@ Route::domain('{accountName}.myapp.com')->group(function () {
 });
 
 ```
+
+##### Group Controllers
+
+we can use the route group `controller()` method, to avoid having to define the full tuple for every route
+
+```php
+Route::controller(UserController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('{id}', 'show');
+});
+
+```
+
+##### Fallback Routes
+
+```php
+Route::fallback(function () {
+ // return '404';
+});
+
+```
+
+#### Signed Routes
+
+Many applications regularly send notifications about one-off actions (resetting a password, accepting an invitation, etc.) and provide simple links to take those actions. e.g
+
+e.g `http://myapp.com/invitations/5816/yes?signature=030ab0ef6a8237bd86a8b8`.
+
+To build a signed URL to access a given route, the route must have a `name`:
+
+```php
+Route::get('invitations/{invitation}/{answer}', InvitationController::class)
+ ->name('invitations');
+
+```
+
+##### Protect access to signed routes
+
+1.
+
+```php
+// using the "signed" middleware
+Route::get('invitations/{invitation}/{answer}', InvitationController::class)
+ ->name('invitations')
+ ->middleware('signed');
+```
