@@ -4,6 +4,8 @@
 
 ---
 
+How to setup up laravel in local environment
+
 Laravel offers 5 tools for local development:
 
 - Artisan serve,
