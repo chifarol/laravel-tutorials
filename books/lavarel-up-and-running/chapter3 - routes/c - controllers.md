@@ -124,8 +124,63 @@ Route::get('conferences/{conference}', function (Conference $conference) {
 - To change the column your Eloquent model uses for URL lookups in all your routes, add a method to your model named `getRouteKeyName()`
 
 ```php
+// Models/User.php
 public function getRouteKeyName()
 {
  return 'slug';
 }
 ```
+
+##### Customizing the Route Key in a Specic Route
+
+```php
+Route::get( 'conferences/{conference:slug}',
+    function (Conference $conference) {
+       $conference->id;
+    }
+ );
+
+```
+
+#### Manual / Custom Route Model Binding
+
+To manually configure route model bindings
+
+- add a line to the `boot()` method in `App\Providers\RouteServiceProvider`.
+
+```php
+public function boot()
+ {
+    // Perform the binding
+    Route::model('event', Conference::class);
+ }
+```
+
+- with this, whenever a route has a parameter in its definition named
+  `{event}` the route resolver will return an instance of the Conference class with the ID of that URL parameter,
+
+```php
+Route::get('events/{event}', function (Conference $event) {
+ // $event->id;
+});
+```
+
+##### Route Caching
+
+- To cache your routes file, you need to be using no route closures/anonymous fxns, all controllers
+-
+
+```php
+// cache routes
+php artisan route:cache
+
+// clear cache
+php artisan route:clear
+```
+
+**NOTE**:
+
+- Laravel will now match routes against that cached file instead of
+  your actual routes/\* files
+- Changes to your routes files, and they won’t take effect until you run route:cache again
+- Since Git ignores the route cache file by default anyway, consider only using route caching on your production server, and run `php artisan route:cache` every time you deploy new code
