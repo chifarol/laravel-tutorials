@@ -255,11 +255,27 @@ Route::get('invitations/{invitation}/{answer}', InvitationController::class)
 
 ##### Protect access to signed routes
 
-1.
+1. 
 
 ```php
 // using the "signed" middleware
 Route::get('invitations/{invitation}/{answer}', InvitationController::class)
  ->name('invitations')
  ->middleware('signed');
+```
+
+2. 
+```php
+// using the hasValidSignature()
+class InvitationController
+{
+ public function __invoke(Invitation $invitation, $answer, Request $request)
+ {
+ if (! $request->hasValidSignature()) {
+ abort(403);
+ }
+ //
+ }
+}
+
 ```
