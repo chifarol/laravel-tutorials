@@ -183,3 +183,42 @@
     <i class="exclamation-icon"></i> {{ $text }}
 </a>
 ```
+
+- You also use the `@includeIf`, `@includeWhen`, and `@includeFirst`
+
+```php
+//  Include view if it exists
+@includeIf('sidebars.admin', ['some' => 'data'])
+
+//  Include view if a passed variable is truth-y
+@includeWhen($user->isAdmin(), 'sidebars.admin', ['some' => 'data'])
+
+//  Include the first view that exists from a given array of views
+@includeFirst(['customs.header', 'header'], ['some' => 'data'])
+
+```
+
+2. `@each`
+
+- useful if you’d need to **loop** over an array or collection and **include** a partial for each item.
+- The first **('partials.module')** parameter is the name of the view partial
+- The second **($modules)** is the $array or $collection to iterate over
+- . The third **('module')** is the variable name that each item (in this case, each element in the `$modules` array) will be passed as to the view (i.e `$module`)
+- The 4th **('partials.empty-module')** parameter is the name of the view partial
+
+```php
+<!-- resources/views/sidebar.blade.php -->
+<div class="sidebar">
+    @each('partials.module', $modules, 'module', 'partials.empty-module')
+</div>
+
+<!-- resources/views/partials/module.blade.php -->
+<div class="sidebar-module">
+    <h1>{{ $module->title }}</h1>
+</div>
+
+<!-- resources/views/partials/empty-module.blade.php -->
+<div class="sidebar-module">
+    Sorry, no modules
+</div>
+```

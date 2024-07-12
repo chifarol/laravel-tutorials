@@ -52,7 +52,28 @@ module.exports = {
 };
 ```
 
-5. Add directives to main CSS file (e.g resources/css/app.css )
+5. make sure vite.config.js has the following
+
+```js
+import { defineConfig } from "vite";
+import laravel from "laravel-vite-plugin";
+
+export default defineConfig({
+  plugins: [
+    laravel({
+      input: ["resources/css/app.css", "resources/js/app.js"],
+      refresh: true,
+    }),
+  ],
+  server: {
+    hmr: {
+      host: "localhost",
+    },
+  },
+});
+```
+
+6. Add tailwind directives to main CSS file (e.g resources/css/app.css )
 
 ```css
 /* resources/css/app.css */
@@ -61,7 +82,7 @@ module.exports = {
 @tailwind utilities;
 ```
 
-6. Link the css output with `@vite` directive
+7. Link the css output with `@vite` directive
 
 ```php
 <head>
