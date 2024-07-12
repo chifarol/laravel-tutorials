@@ -3,7 +3,7 @@
 #### Custom Responses
 
 - apart from **views**, **redirects**, and **aborts** you can return HTTP responses like strings, json, trigger downloads, streams etc
-- `response()` global hlper or the `Response` facade
+- use the `response()` global helper or the `Response` facade
 
 ##### response()->make()
 
@@ -36,7 +36,7 @@ Route::post('form', function () {
 - - optional second parameter of the download filename
 
 ```php
-//  send a file that’s at le501751.pdf and rename it, as it’s sent, to myFile.pdf
+//  send a file that’s at file501751.pdf and rename it, as it’s sent, to myFile.pdf
 Route::post('download-pdf', function () {
   return response()->download('file501751.pdf', 'myFile.pdf')
 });

@@ -4,16 +4,15 @@
 
 ### Typical methods of Laravel’s resource controllers
 
-| Verb | URL | method | Name | Description |
-| ---- | --- | ------ | ---- | ----------- |
-
-GET | tasks | index() | tasks.index | Show all tasks
-GET | tasks/create | create() | tasks.create | Show the create task form
-POST | tasks | store() | tasks.store | Accept form submission from the create task form
-GET | tasks/{task} | show() | tasks.show | Show one task
-GET | tasks/{task}/edit | edit() | tasks.edit | Edit one task
-PUT | tasks/{task}| update() | tasks.update | Accept form submission from the edit task form
-DELETE | tasks/{task} | destroy() | tasks.destroy | Delete one task
+| Verb   | URL               | Method    | Name          | Description                                      |
+| ------ | ----------------- | --------- | ------------- | ------------------------------------------------ |
+| GET    | tasks             | index()   | tasks.index   | Show all tasks                                   |
+| GET    | tasks/create      | create()  | tasks.create  | Show the create task form                        |
+| POST   | tasks             | store()   | tasks.store   | Accept form submission from the create task form |
+| GET    | tasks/{task}      | show()    | tasks.show    | Show one task                                    |
+| GET    | tasks/{task}/edit | edit()    | tasks.edit    | Edit one task                                    |
+| PUT    | tasks/{task}      | update()  | tasks.update  | Accept form submission from the edit task form   |
+| DELETE | tasks/{task}      | destroy() | tasks.destroy | Delete one task                                  |
 
 - where `{task}` is a reference to a model called Tas
 - by default the id field is used for model binding
@@ -255,7 +254,7 @@ Route::get('invitations/{invitation}/{answer}', InvitationController::class)
 
 ##### Protect access to signed routes
 
-1. 
+1.
 
 ```php
 // using the "signed" middleware
@@ -264,7 +263,8 @@ Route::get('invitations/{invitation}/{answer}', InvitationController::class)
  ->middleware('signed');
 ```
 
-2. 
+2.
+
 ```php
 // using the hasValidSignature()
 class InvitationController
