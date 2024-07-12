@@ -11,6 +11,21 @@ public function boot(): void
     Blade::directive('ifGuest', function () {
     return "<?php if (auth()->guest()): ?>";
     });
+
+    // with parameter
+   Blade::directive('newlinesToBr', function ($expression) {
+    return "<?php echo nl2br({$expression}); ?>";
+   });
 }
 
+//
+<div>
+    @ifGuest()
+        Hello {{$user->name}}
+    @endifGuest()
+
+    <p>@newlinesToBr($message->body)</p>
+</div>
 ```
+
+- Blade caches aggressively so custom directives may not be re-created on every page load
