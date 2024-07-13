@@ -208,7 +208,7 @@ const MyComp=(props)=>
 
 ```php
 <!-- Definition -->
-<div {{ $attributes->merge(['class' => 'p-4 m-4']) }}>
+<div {{ $attributes->merge(['class' => 'p-4 m-4','type' => 'button']) }}>
  {{ $slot }}
 </div>
 
