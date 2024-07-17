@@ -137,3 +137,27 @@ class Contact extends Model
     ];
 }
 ```
+
+### List of cast
+
+- array
+- AsStringable::class
+- boolean
+- collection
+- date
+- datetime
+- immutable_date
+- immutable_datetime
+- decimal:<precision>
+- double
+- encrypted
+- encrypted:array
+- encrypted:collection
+- encrypted:object
+- float
+- hashed
+- integer
+- object
+- real
+- string
+- timestamp
