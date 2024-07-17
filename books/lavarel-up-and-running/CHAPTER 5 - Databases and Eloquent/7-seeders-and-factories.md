@@ -252,4 +252,35 @@ Address::factory()
 
 ```
 
-## Query Builder
+## Defining and accessing multiple model factory states
+
+- by default a factry's `definition()` method is called
+- sometimes you need more than one factory for a class of object to spin up different types of records
+- We can use the `state()` method to define a second factory state
+
+```php
+class ContactFactory extends Factory
+{
+ protected $model = Contact::class;
+
+public function definition(): array
+ {
+    return [
+        'name' => 'Lupita Smith',
+        'email' => 'lupita@gmail.com',
+    ];
+ }
+ public function vip()
+ {
+    return $this->state(function (array $attributes) {
+        return [
+            'vip' => true,
+            // Uses the "company_id" property from the $attributes
+            'company_size' => function () use ($attributes) {
+                return Company::find($attributes['company_id'])->size;
+            },
+        ];
+    });
+ }
+}
+```

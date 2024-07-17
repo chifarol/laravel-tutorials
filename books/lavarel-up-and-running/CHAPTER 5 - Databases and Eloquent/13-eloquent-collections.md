@@ -284,6 +284,59 @@ class Student extends Model
 
 ```
 
+### Eager Loading the Contents of a Relationship
+
+- By default, Eloquent relationships are lazy loaded
+- related models are only be loaded once you access them on the model e.g `$user->profile`
+- Lazy loading can be memory-intensive esp. when iterating/looping
+- use `with()` to eager load one or more related items
+- use `withCount()` to eager load the count of model instances ina "model_count" colum
+
+```php
+// creates an joint table
+$user = User::with(['profile','address'])->get();
+
+
+// eager load a relationship but not all of the items,
+$contacts = Contact::with(['addresses' => function ($query) {
+ $query->where('mailable', true);
+}])->get();
+
+// Adds a "posts_count" integer to each Author with a count of that
+// author's related posts
+$authors = Author::withCount('posts')->get();
+
+```
+
+### Lazy eager loading
+
+- You can choose to lazyload but eager load later with `load()`
+- to load a relationship only when it **has not already** been loaded use `loadMissing()`
+
+```php
+$contacts = Contact::all();
+if ($showPhoneNumbers) {
+ $contacts->load('phoneNumbers');
+ // load a relationship only when it has not already been loaded
+ $contacts->loadMissing('phoneNumbers');
+}
+
+```
+
+### Prevent Lazy loading
+
+- disable lazy loading for your entire app at once in **AppServiceProvider**
+- disable lazy loading for model in the model class
+
+```php
+use Illuminate\Database\Eloquent\Model;
+public function boot()
+{
+    Model::preventLazyLoading(! $this->app->isProduction());
+}
+
+```
+
 ### Selecting only records that have a related item
 
 - use `has()`
