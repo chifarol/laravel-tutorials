@@ -130,7 +130,7 @@ $contact = Contact::make([
 $contact->save();
 ```
 
-2. create()
+2. `create()`
 
 - to save instance automatically use `create()` method
 - every property you set via `Model::create()` has to be approved for “mass assignment” in the Model class `$fillable` property
@@ -149,15 +149,108 @@ class Contact extends Model
         'name',
         'email',
     ];
+    // nonfillable properties can only be changed by direct assignment not mass assignment
+    protected $guarded = ['id', 'created_at', 'updated_at', 'owner_id'];
 }
 ```
 
-## Updates
+3. `firstOrCreate()` and `firstOrNew()`
+
+- Get an instance but if it doesn’t exist, create it
+- `firstOrCreate()` will **save** that instance to the database and then return it, while `firstOrNew()` will return it **without saving** it
+
+```php
+$contact = Contact::firstOrCreate(['email' => 'luis.ramos@myacme.com']);
+```
+
+## Updating with Eloquent
 
 - Updating records looks very similar to inserting.
+- You can also update one or more Eloquent records by passing an array to the `update()` method
 
 ```php
 $contact = Contact::find(1);
 $contact->email = 'natalie@parkfamily.com';
 $contact->save();
+
+// Updating one or more Eloquent records by passing an array to the update() method
+Contact::where('created_at', '<', now()->subYear())
+ ->update(['longevity' => 'ancient']);
 ```
+
+## Deleting with Eloquent
+
+1. **Normal deletes**
+
+- The simplest way to delete a model record is to call the delete() method on the
+  instance
+- However, you can pass an ID or an array of IDs to the model’s destroy()
+
+```php
+$contact = Contact::find(5);
+$contact->delete()
+
+// delete all of the results of a query
+Contact::where('amount', '<', 100)->delete()
+
+Contact::destroy(1);
+// or
+Contact::destroy([1, 5, 7]);
+```
+
+2. **Soft deletes**
+
+- Soft deletes mark database rows as deleted **without actually deleting them from the database**
+
+- with this, you can **archive** your deleted items for later inspection or even recovery with (optional) **soft deletes**
+- The hard part about handcoding an application with soft deletes is that **every query you ever write will need to exclude the soft-deleted data**
+- if you use Eloquent’s soft deletes, every query you ever make will be scoped to ignore soft deletes by default, unless you explicitly ask to bring them back
+- Eloquent’s soft delete functionality requires a `deleted_at`
+
+**Enabling soft deletes.**
+
+- You enable soft deletes by doing two things:
+
+1. adding the **deleted_at** column using `$table->softDeletes()` in a migration
+2. importing the `SoftDeletes` trait in the model
+
+- Once you make these changes, every `delete()` and `destroy()` call will now set the
+  deleted_at column on your row
+
+```php
+// create_contacts_migration-----.php
+Schema::table('contacts', function (Blueprint $table) {
+ $table->softDeletes();
+});
+
+// Models/Contact.php
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+class Contact extends Model
+{
+ use SoftDeletes; // use the trait
+}
+```
+
+### Include soft deletes in query result
+
+- use the `withTrashed()` method to add soft-deleted items to a query
+- use the `trashed()` method to check if a particular instance has been softdeleted
+- use the `onlyTrashed()` method to get only soft-deleted items in query
+
+```php
+// add soft-deleted items to a query
+$allHistoricContacts = Contact::withTrashed()->get();
+
+// check if instance has been softdeleted
+if ($contact->trashed()) {
+ // do something
+}
+
+//  get only soft-deleted items
+$deletedContacts = Contact::onlyTrashed()->get();
+```
+
+### Restoring soft-deleted entities
+
+- run `restore()` on an instance or a query to to restore a soft-deleted item
