@@ -254,3 +254,21 @@ $deletedContacts = Contact::onlyTrashed()->get();
 ### Restoring soft-deleted entities
 
 - run `restore()` on an instance or a query to to restore a soft-deleted item
+
+```php
+// restore instance
+$contact->restore();
+
+// restore all query results
+Contact::onlyTrashed()->where('vip', true)->restore();
+```
+
+### Force-deleting soft-deleted entities
+
+- Permanently delete a soft-deleted entity by calling `forceDelete()` on an entity or query
+
+```php
+$contact->forceDelete();
+// or
+Contact::onlyTrashed()->forceDelete();
+```
