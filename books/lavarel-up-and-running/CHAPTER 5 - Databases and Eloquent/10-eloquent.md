@@ -130,7 +130,7 @@ $contact = Contact::make([
 $contact->save();
 ```
 
-2. `create()`
+2. `create()` ans mass assignments
 
 - to save instance automatically use `create()` method
 - every property you set via `Model::create()` has to be approved for “mass assignment” in the Model class `$fillable` property

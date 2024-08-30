@@ -200,8 +200,7 @@ class ContactFactory extends Factory
         'company_size' => function (array $attributes) {
             // Uses the "company_id" property generated above
         return Company::find($attributes['company_id'])->size;
- },
-
+        },
     ];
  }
 }
@@ -257,6 +256,7 @@ Address::factory()
 - by default a factry's `definition()` method is called
 - sometimes you need more than one factory for a class of object to spin up different types of records
 - We can use the `state()` method to define a second factory state
+- if we return false, the operation will cancel and the `save()` or `update()` will be canceled
 
 ```php
 class ContactFactory extends Factory
@@ -266,21 +266,46 @@ class ContactFactory extends Factory
 public function definition(): array
  {
     return [
-        'name' => 'Lupita Smith',
-        'email' => 'lupita@gmail.com',
+        'name' => fake()->name,
+        'email' => fake()->email,
+        'vip' => false,
+        // Uses the "company_id" property from the $attributes
+        'company_size' => function () use ($attributes) {
+            return Company::find($attributes['company_id'])->size;
+        },
     ];
+
  }
  public function vip()
  {
-    return $this->state(function (array $attributes) {
+    $this->state(function (array $attributes) {
         return [
+            'name' => fake()->name,
+            'email' => fake()->email,
             'vip' => true,
-            // Uses the "company_id" property from the $attributes
-            'company_size' => function () use ($attributes) {
-                return Company::find($attributes['company_id'])->size;
-            },
         ];
     });
  }
 }
+
+public function adminUser()
+{
+    return [
+        'name' => "admin",
+        'email' => "admin@gmail.com",
+        // assuming default is_admin is 0
+        'is_admin' => "1",
+        'vip' => true,
+    ];
+}
+```
+
+```php
+// create regular contacts
+$regular_contacts = Contact::factory()->count(3)->create();
+
+// create VIP contacts
+$vips = Contact::factory()->count(3)->vip()->create();
+
+$vips = Contact::factory()->count(1)->adminUser()->create();
 ```

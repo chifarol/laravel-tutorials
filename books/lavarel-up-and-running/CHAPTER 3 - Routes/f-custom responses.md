@@ -1,11 +1,11 @@
 <!-- @format -->
 
-#### Custom Responses
+# Other Responses
 
 - apart from **views**, **redirects**, and **aborts** you can return HTTP responses like strings, json, trigger downloads, streams etc
 - use the `response()` global helper or the `Response` facade
 
-##### response()->make()
+### response()->make()
 
 ```php
 Route::post('form', function () {
@@ -15,7 +15,7 @@ Route::post('form', function () {
 });
 ```
 
-##### response()->json() and ->jsonp()
+### response()->json() and ->jsonp()
 
 - pass your JSON-able content (**arrays**, **collections**, etc) to the `json()` method
 - It’s just like make(), except it `json_encodes` your content.
@@ -28,7 +28,7 @@ Route::post('form', function () {
 });
 ```
 
-##### response()->download(), ->streamDownload(), and ->file()
+### response()->download(), ->streamDownload(), and ->file()
 
 1. `->download()`
 
@@ -62,4 +62,70 @@ Route::post('download-pdf', function () {
 return response()->streamDownload(function () {
  echo DocumentService::file('myFile')->getContent();
 }, 'myFile.pdf');
+```
+
+## Custom response macros
+
+- You can also create your own custom response types using macros.
+- This allows you to define a series of modifications to make to the response and its provided content.
+
+```php
+class AppServiceProvider
+{
+  public function boot()
+  {
+    Response::macro('myJson', function ($content) {
+      return response(json_encode($content))->withHeaders(['Content-Type' => 'application/json']);
+    });
+  }
+
+}
+```
+
+Then, we can use it just like we would use the predefined json() macro:
+
+```php
+return response()->myJson(['name' => 'Sangeetha']);
+
+```
+
+## Custom responses using `responsable` interface
+
+- If you’d like to customize how you’re sending responses and a macro doesn’t offer enough space or enough organization, or if you want any of your objects to be capable of being returned as a “response” with their own logic of how to be displayed
+
+```php
+use Illuminate\Contracts\Support\Responsable;
+class GroupDonationDashboard implements Responsable
+{
+  public function __construct($group)
+  {
+    $this->group = $group;
+  }
+  public function budgetThisYear()
+  {
+  // ...
+  }
+  public function giftsThisYear()
+  {
+  // ...
+  }
+  public function toResponse()
+  {
+    return view('groups.dashboard')
+  ->with('annual_budget', $this->budgetThisYear())
+  ->with('annual_gifts_received', $this->giftsThisYear());
+  }
+}
+```
+
+And use it as
+
+```php
+class GroupController
+{
+  public function index(Group $group)
+  {
+    return new GroupDonationsDashboard($group);
+  }
+}
 ```
