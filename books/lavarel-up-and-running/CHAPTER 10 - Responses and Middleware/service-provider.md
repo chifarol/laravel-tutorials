@@ -5,6 +5,7 @@
 - Almost all of Laravel’s bootstrap code is separated into something Laravel calls **service providers**
 - Service providers e.g **AuthServiceProvider** are normally located at `app/Providers` directory
 - A service provider is a class that encapsulates logic that various parts of your application need to run to bootstrap their core functionality
+- **App\Providers\AppServiceProvider**, which is a bit of a catchall
 
 - **AuthServiceProvider** that bootstraps all of the registrations necessary for Laravel’s **authentication** system
 - **RouteServiceProvider** that bootstraps all of the registrations necessary for Laravel’s **routing** system e.g middleware groups
